@@ -103,7 +103,7 @@ class GetPage:
         return filtered_link_list
 
     @staticmethod
-    def downloader(download_url, destination=r'.\Downloads', delay_time=5.0):
+    def downloader(download_url, destination=r'.\download', delay_time=5.0):
         """
         Download the files from the url to the destination path.
         Beware: many websites don't like it very much when you automatically
