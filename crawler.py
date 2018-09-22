@@ -4,28 +4,26 @@ from contextlib import closing
 from requests import get
 from requests.exceptions import RequestException
 from bs4 import BeautifulSoup
+from pprint import pprint
 
 
 class GetPage:
-    """
-    General Class used for:
-        parsing html sites
-        extract data
-        downloading files
-    """
+    """General Class used for: parsing html sites, extract data, downloading files"""
 
     def __init__(self, url):
         """
        Init instance variables
 
        Attributes:
-           url (string) : 'https://www.example.com'
+           url (string): 'https://www.example.com'
            soup (obj): Beatifulsoup object
            link_list (list): provide links from the parsed html
+           mail_list (list): provide emails from the parsed html
         """
         self.url = url
         self.soup = None
         self.link_list = []
+        self.mail_list = []
         self.simple_get()
 
     def simple_get(self):
@@ -76,7 +74,7 @@ class GetPage:
             >>> soup = BeautifulSoup(raw_data)
             >>> extract_link(soup)
         """
-        for link in self.soup.findAll('a', attrs={'href': re.compile("^https://")}):
+        for link in self.soup.findAll('a', attrs={'href': re.compile("^http")}):
             self.link_list.append(link.get('href').replace(" ", "%20"))
         return self.link_list
 
@@ -113,9 +111,6 @@ class GetPage:
             download_url (string): https://www.bot.or.th/example.html
             destination (string): Destination of file
             delay_time (float): Wait time between downloads
-
-        Returns:
-
         """
         from urllib.request import urlretrieve
         from time import sleep
@@ -125,17 +120,25 @@ class GetPage:
 
     def extract_emails(self):
         """
-        TBD
-        Returns:
+        Extract mail from given Beautfilsoup object.
 
+        Args:
+           soup(class 'bs4.BeautifulSoup) : parsed bs html
+
+        Returns:
+            list: list of mails
+
+        Example:
+            >>> soup = BeautifulSoup(raw_data)
+            >>> extract_emails(soup)
         """
-        pass
+        for mail in self.soup.findAll('a', attrs={'href': re.compile("^mailto")}):
+            self.mail_list.append(mail.get('href').replace(" ", "%20"))
+        return self.mail_list
 
 
 if __name__ == "__main__":
-    PDF_EXAMPLE_LINK = \
-        'https://www.bot.or.th/English/MonetaryPolicy/Northern/EconomicReport/Pages/Releass_Economic_north.aspx'
-    OBJ = GetPage(PDF_EXAMPLE_LINK)
-    OBJ.extract_link()
-    PDFS = OBJ.filter_links(['pdf'])
-    GetPage.downloader(PDFS)
+    SITE_LINK = 'https://www.fluentu.com/blog/business-english/business-english-email-writing/'
+    OBJ = GetPage(SITE_LINK)
+    pprint(OBJ.extract_emails())
+
